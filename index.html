@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>학생 행동 누가기록장</title>
+  
+  <!-- 브라우저 탭 파비콘 -->
+  <link rel="icon" type="image/png" href="favicon.png">
+
   <style>
     :root {
       --primary: #4F46E5;
@@ -44,6 +48,15 @@
     header {
       text-align: center;
       margin-bottom: 1.5rem;
+    }
+
+    /* 로고 이미지 원본 비율 유지 스타일링 */
+    .app-logo {
+      height: 52px;
+      max-width: 100%;
+      object-fit: contain; /* 비율 찌그러짐 방지 */
+      margin-bottom: 0.75rem;
+      display: inline-block;
     }
 
     header h1 {
@@ -140,7 +153,9 @@
 
   <div class="container">
     <header>
-      <h1>📝 행동 누가기록장</h1>
+      <!-- 원본 비율 그대로 예쁘게 나오는 로고 이미지 -->
+      <img src="favicon.png" alt="로고" class="app-logo" onerror="this.style.display='none'">
+      <h1>행동 누가기록장</h1>
       <p>학생의 특이사항 및 행동을 기록해주세요.</p>
     </header>
 
@@ -163,12 +178,12 @@
       <button type="submit" id="submitBtn" disabled>저장하기</button>
     </form>
 
-    <!-- 알림 메시지 -->
+    <!-- 알림 메시지 창 -->
     <div id="alertBox" class="alert"></div>
   </div>
 
   <script>
-    // ⚙️ 안내해주신 Apps Script 웹 앱 배포 URL이 적용되었습니다.
+    // 선생님의 Apps Script 배포 URL
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbwYyPIf4okHz08TVDNDL1mvgsQKDNCcyL9tIBmZ_uTpHVKhZX7zbcJ9xeNj2_2vVNni/exec";
 
     const studentSelect = document.getElementById("studentSelect");
@@ -179,7 +194,7 @@
 
     let studentsData = [];
 
-    // 메시지 알림 함수
+    // 메시지 안내 함수
     function showAlert(message, type) {
       alertBox.textContent = message;
       alertBox.className = `alert ${type}`;
@@ -188,7 +203,7 @@
       }, 4000);
     }
 
-    // 1. 학생 목록 불러오기 (GET)
+    // 1. 구글 시트에서 학생 목록 가져오기 (GET)
     async function loadStudents() {
       try {
         const response = await fetch(GAS_API_URL);
@@ -216,7 +231,7 @@
       }
     }
 
-    // 2. 폼 제출 시 데이터 저장 (POST)
+    // 2. 기록 저장하기 (POST)
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -228,7 +243,6 @@
         return;
       }
 
-      // 선택된 학생 이름 찾기
       const targetStudent = studentsData.find(s => String(s.number) === String(selectedNumber));
       const studentName = targetStudent ? targetStudent.name : "";
 
@@ -252,7 +266,7 @@
 
         if (result.status === "success") {
           showAlert(`${studentName} 학생의 기록이 저장되었습니다! 🎉`, "success");
-          recordContent.value = ""; // 입력창 비우기
+          recordContent.value = "";
         } else {
           showAlert("저장에 실패했습니다. 다시 시도해주세요.", "error");
         }
@@ -265,7 +279,7 @@
       }
     });
 
-    // 화면이 열리면 바로 명단 로드
+    // 화면 시작 시 명단 자동 로드
     window.addEventListener("DOMContentLoaded", loadStudents);
   </script>
 </body>
